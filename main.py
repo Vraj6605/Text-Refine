@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 from model import model
@@ -9,6 +10,15 @@ app = FastAPI(
     title="Text Refine API",
     description="API for refining and improving text",
     version="1.0.0"
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins, change to specific URLs in production
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],  # Allow all headers
 )
 
 # Create the chain
@@ -26,13 +36,13 @@ class TextResponse(BaseModel):
 
 
 @app.get("/")
-async def root():
+def root():
     """Health check endpoint"""
     return {"message": "Text Refine API is running", "status": "healthy"}
 
 
 @app.post("/refine", response_model=TextResponse)
-async def refine_text(request: TextRequest):
+def refine_text(request: TextRequest):
     """
     Refine and improve the given text
     
